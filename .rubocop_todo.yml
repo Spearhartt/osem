@@ -141,23 +141,6 @@ Rails/TimeZone:
     - 'spec/models/campaign_spec.rb'
     - 'spec/models/conference_spec.rb'
 
-# Offense count: 16
-# Configuration parameters: Include.
-# Include: app/models/**/*.rb
-Rails/Validation:
-  Exclude:
-    - 'app/models/call_for_paper.rb'
-    - 'app/models/comment.rb'
-    - 'app/models/conference.rb'
-    - 'app/models/photo.rb'
-    - 'app/models/registration.rb'
-    - 'app/models/sponsor.rb'
-    - 'app/models/sponsorship_level.rb'
-    - 'app/models/subscription.rb'
-    - 'app/models/ticket.rb'
-    - 'app/models/ticket_purchase.rb'
-    - 'app/models/vposition.rb'
-
 # Offense count: 18
 Style/AccessorMethodName:
   Exclude:
@@ -238,18 +221,6 @@ Style/ConditionalAssignment:
 # Offense count: 366
 Style/Documentation:
   Enabled: false
-
-# Offense count: 74
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: leading, trailing
-Style/DotPosition:
-  Enabled: false
-
-# Offense count: 5
-Style/DoubleNegation:
-  Exclude:
-    - 'app/models/conference.rb'
 
 # Offense count: 1
 # Cop supports --auto-correct.
@@ -444,20 +415,6 @@ Style/MutableConstant:
     - 'app/models/event_user.rb'
     - 'app/models/role.rb'
 
-# Offense count: 16
-# Cop supports --auto-correct.
-Style/NegatedIf:
-  Exclude:
-    - 'app/controllers/admin/events_controller.rb'
-    - 'app/controllers/application_controller.rb'
-    - 'app/controllers/conference_registrations_controller.rb'
-    - 'app/controllers/proposal_controller.rb'
-    - 'app/models/conference.rb'
-    - 'app/models/datatable.rb'
-    - 'app/models/event.rb'
-    - 'app/models/venue.rb'
-    - 'db/migrate/20140820093735_migrating_supporter_registrations_to_ticket_users.rb'
-
 # Offense count: 4
 Style/NestedParenthesizedCalls:
   Exclude:
@@ -531,22 +488,6 @@ Style/RedundantParentheses:
 Style/RedundantReturn:
   Exclude:
     - 'app/helpers/application_helper.rb'
-
-# Offense count: 61
-# Cop supports --auto-correct.
-Style/RedundantSelf:
-  Exclude:
-    - 'app/models/ahoy/program.rb'
-    - 'app/models/call_for_paper.rb'
-    - 'app/models/cfp.rb'
-    - 'app/models/comment.rb'
-    - 'app/models/conference.rb'
-    - 'app/models/event.rb'
-    - 'app/models/program.rb'
-    - 'app/models/question.rb'
-    - 'app/models/ticket.rb'
-    - 'app/models/user.rb'
-    - 'app/models/venue.rb'
 
 # Offense count: 2
 # Cop supports --auto-correct.
@@ -661,17 +602,6 @@ Style/SymbolProc:
     - 'spec/controllers/admin/conferences_controller_spec.rb'
     - 'spec/support/flash.rb'
 
-# Offense count: 23
-# Cop supports --auto-correct.
-Style/Tab:
-  Exclude:
-    - 'db/migrate/20141031225545_add_require_handicapped_access_to_questions.rb'
-    - 'db/migrate/20141031225606_add_attending_with_partner_to_questions.rb'
-    - 'db/migrate/20141031225620_add_staying_at_suggested_hotel_to_questions.rb'
-    - 'db/migrate/20141031225635_add_attending_social_events_to_questions.rb'
-    - 'db/migrate/20141118162030_change_lodging_association_to_conference.rb'
-    - 'spec/features/campaign_spec.rb'
-    - 'spec/features/event_types_spec.rb'
 
 # Offense count: 26
 # Cop supports --auto-correct.
@@ -701,8 +631,3 @@ Style/UnneededInterpolation:
 Style/WordArray:
   EnforcedStyle: percent
   MinSize: 3
-
-# Offense count: 1
-Style/ZeroLengthPredicate:
-  Exclude:
-    - 'app/models/conference.rb'

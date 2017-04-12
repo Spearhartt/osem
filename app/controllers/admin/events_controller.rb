@@ -5,7 +5,7 @@ module Admin
     load_and_authorize_resource :event, through: :program
     load_and_authorize_resource :events_registration, only: :toggle_attendance
 
-    before_action :get_event, except: [:index, :create, :reports]
+    before_action :get_event, except: [:index, :create]
 
     # FIXME: The timezome should only be applied on output, otherwise
     # you get lost in timezone conversions...
@@ -51,7 +51,9 @@ module Admin
       @difficulty_levels = @program.difficulty_levels
       @versions = @event.versions |
        PaperTrail::Version.where(item_type: 'Commercial').where_object(commercialable_id: @event.id, commercialable_type: 'Event') |
-       PaperTrail::Version.where(item_type: 'Commercial').where_object_changes(commercialable_id: @event.id, commercialable_type: 'Event')
+       PaperTrail::Version.where(item_type: 'Commercial').where_object_changes(commercialable_id: @event.id, commercialable_type: 'Event') |
+       PaperTrail::Version.where(item_type: 'Vote').where('object_changes LIKE ?', "%\nevent_id:\n- \n- #{@event.id}\n%") |
+       PaperTrail::Version.where(item_type: 'Vote').where('object LIKE ?', "%\nevent_id: #{@event.id}\n%")
     end
 
     def edit
@@ -87,7 +89,7 @@ module Admin
         end
       else
         @url = admin_conference_program_event_path(@conference.short_title, @event)
-        flash[:error] = 'Update not successful. ' + @event.errors.full_messages.to_sentence
+        flash.now[:error] = 'Update not successful. ' + @event.errors.full_messages.to_sentence
         render :edit
       end
     end
@@ -148,17 +150,6 @@ module Admin
       else
         head :unprocessable_entity
       end
-    end
-
-    def reports
-      @events = @program.events
-      @events_commercials = Commercial.where(commercialable_type: 'Event', commercialable_id: @events.pluck(:id))
-      @events_missing_commercial = @events.where.not(id: @events_commercials.pluck(:commercialable_id))
-      @events_with_requirements = @events.where.not(description: ['', nil])
-
-      attended_registrants_ids = @conference.registrations.where(attended: true).pluck(:user_id)
-      @missing_event_speakers = EventUser.joins(:event).where('event_role = ? and program_id = ?', 'submitter', @program.id).
-                                                                                        where.not(user_id: attended_registrants_ids).includes(:user, :event)
     end
 
     private

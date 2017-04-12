@@ -7,7 +7,7 @@ class Conference < ActiveRecord::Base
 
   default_scope { order('start_date DESC') }
 
-  has_paper_trail ignore: [:updated_at, :guid, :revision, :events_per_week], meta: { conference_id: :id }
+  has_paper_trail ignore: %i(updated_at guid revision events_per_week), meta: { conference_id: :id }
 
   has_and_belongs_to_many :questions
 
@@ -48,15 +48,15 @@ class Conference < ActiveRecord::Base
 
   mount_uploader :picture, PictureUploader, mount_on: :logo_file_name
 
-  validates_presence_of :title,
-                        :short_title,
-                        :start_date,
-                        :end_date,
-                        :start_hour,
-                        :end_hour
+  validates :title,
+            :short_title,
+            :start_date,
+            :end_date,
+            :start_hour,
+            :end_hour, presence: true
 
-  validates_uniqueness_of :short_title
-  validates_format_of :short_title, with: /\A[a-zA-Z0-9_-]*\z/
+  validates :short_title, uniqueness: true
+  validates :short_title, format: { with: /\A[a-zA-Z0-9_-]*\z/ }
   validates :registration_limit, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
   # This validation is needed since a conference with a start date greater than the end date is not possible
@@ -67,24 +67,6 @@ class Conference < ActiveRecord::Base
   before_create :create_email_settings
 
   after_create :create_free_ticket
-
-  def date_range_string
-    startstr = 'Unknown - '
-    endstr = 'Unknown'
-    if start_date.month == end_date.month && start_date.year == end_date.year
-      startstr = start_date.strftime('%B %d - ')
-      endstr = end_date.strftime('%d, %Y')
-    elsif start_date.month != end_date.month && start_date.year == end_date.year
-      startstr = start_date.strftime('%B %d - ')
-      endstr = end_date.strftime('%B %d, %Y')
-    else
-      startstr = start_date.strftime('%B %d, %Y - ')
-      endstr = end_date.strftime('%B %d, %Y')
-    end
-
-    result = startstr + endstr
-    result
-  end
 
   ##
   # Checks if the user is registered to the conference
@@ -198,8 +180,8 @@ class Conference < ActiveRecord::Base
     if registration_period &&
         registration_period.start_date &&
         registration_period.end_date
-      weeks = Date.new(registration_period.start_date.year, 12, 31).
-          strftime('%W').to_i
+      weeks = Date.new(registration_period.start_date.year, 12, 31)
+          .strftime('%W').to_i
 
       result = get_registration_end_week - get_registration_start_week + 1
     end
@@ -295,9 +277,9 @@ class Conference < ActiveRecord::Base
   # ====Returns
   # * +hash+ -> user: submissions
   def get_top_submitter(limit = 5)
-    submitter = EventUser.joins(:event).
-        where('event_role = ? and program_id = ?', 'submitter', Conference.find(id).program.id).
-        limit(limit).group(:user_id)
+    submitter = EventUser.joins(:event)
+        .where('event_role = ? and program_id = ?', 'submitter', Conference.find(id).program.id)
+        .limit(limit).group(:user_id)
     counter = submitter.order('count_all desc').count
     Conference.calculate_user_submission_hash(submitter, counter)
   end
@@ -479,13 +461,13 @@ class Conference < ActiveRecord::Base
   # ====Returns
   # * +ActiveRecord+
   def self.get_active_conferences_for_dashboard
-    result = Conference.where('start_date > ?', Time.now).
-        select('id, short_title, color, start_date')
+    result = Conference.where('start_date > ?', Time.now)
+        .select('id, short_title, color, start_date')
 
-    if result.length == 0
-      result = Conference.
-          select('id, short_title, color, start_date').limit(2).
-          order(start_date: :desc)
+    if result.empty?
+      result = Conference
+          .select('id, short_title, color, start_date').limit(2)
+          .order(start_date: :desc)
     end
     result
   end
@@ -573,11 +555,11 @@ class Conference < ActiveRecord::Base
   # * +True+ -> If conference is updated and all other parameters are set
   # * +False+ -> Either conference is not updated or one or more parameter is not set
   def notify_on_dates_changed?
-    return false unless self.email_settings.send_on_conference_dates_updated
+    return false unless email_settings.send_on_conference_dates_updated
     # do not notify unless one of the dates changed
-    return false unless self.start_date_changed? || self.end_date_changed?
+    return false unless start_date_changed? || end_date_changed?
     # do not notify unless the mail content is set up
-    (!email_settings.conference_dates_updated_subject.blank? && !email_settings.conference_dates_updated_body.blank?)
+    (email_settings.conference_dates_updated_subject.present? && email_settings.conference_dates_updated_body.present?)
   end
 
   ##
@@ -587,13 +569,13 @@ class Conference < ActiveRecord::Base
   # * +True+ -> If registration dates is updated and all other parameters are set
   # * +False+ -> Either registration date is not updated or one or more parameter is not set
   def notify_on_registration_dates_changed?
-    return false unless self.email_settings.send_on_conference_registration_dates_updated
+    return false unless email_settings.send_on_conference_registration_dates_updated
     # do not notify unless we allow a registration
-    return false unless self.registration_period
+    return false unless registration_period
     # do not notify unless one of the dates changed
     return false unless registration_period.start_date_changed? || registration_period.end_date_changed?
     # do not notify unless the mail content is set up
-    (!email_settings.conference_registration_dates_updated_subject.blank? && !email_settings.conference_registration_dates_updated_body.blank?)
+    (email_settings.conference_registration_dates_updated_subject.present? && email_settings.conference_registration_dates_updated_body.present?)
   end
 
   def registration_limit_exceeded?
@@ -646,8 +628,8 @@ class Conference < ActiveRecord::Base
   end
 
   after_create do
-    self.create_contact
-    self.create_program
+    create_contact
+    create_program
     create_roles
   end
 
@@ -675,7 +657,7 @@ class Conference < ActiveRecord::Base
   #
   # Reports an error when such a condition is found
   def valid_date_range?
-    errors.add(:start_date, 'Start date is greater than End date') if start_date && end_date && start_date > end_date
+    errors.add(:start_date, 'is greater than End date') if start_date && end_date && start_date > end_date
   end
 
   ##
@@ -717,7 +699,7 @@ class Conference < ActiveRecord::Base
     # Completed weeks
     events_per_week.each do |week, values|
       values.each do |state, value|
-        if [:confirmed, :unconfirmed].include?(state)
+        if %i(confirmed unconfirmed).include?(state)
           unless result[state.to_s.capitalize]
             result[state.to_s.capitalize] = {}
           end
@@ -856,7 +838,7 @@ class Conference < ActiveRecord::Base
   # * +True+ -> If conference has a venue object.
   # * +False+ -> IF conference has no venue object.
   def venue_set?
-    !!venue
+    venue.present?
   end
 
   ##
@@ -866,7 +848,7 @@ class Conference < ActiveRecord::Base
   # * +True+ -> If conference has a cfp object.
   # * +False+ -> If conference has no cfp object.
   def cfp_set?
-    !!program.cfp
+    program.cfp.present?
   end
 
   ##
@@ -876,7 +858,7 @@ class Conference < ActiveRecord::Base
   # * +True+ -> If conference has a start and a end date.
   # * +False+ -> If conference has no start or end date.
   def registration_date_set?
-    !!registration_period && !!registration_period.start_date && !!registration_period.end_date
+    registration_period.present? && registration_period.start_date.present? && registration_period.end_date.present?
   end
 
   # Calculates the distribution from events.

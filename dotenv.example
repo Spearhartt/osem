@@ -37,10 +37,18 @@ OSEM_FACEBOOK_SECRET=''
 OSEM_GITHUB_KEY=''
 OSEM_GITHUB_SECRET=''
 
+# OMNIAUTH Developer KEY/Secret for SUSE/openSUSE
+OSEM_SUSE_KEY=''
+OSEM_SUSE_SECRET=''
+
 # STRIPE Publishable/Secret keys
 # test keys for development mode, live for production mode
 STRIPE_PUBLISHABLE_KEY=''
 STRIPE_SECRET_KEY=''
+
+# Disable linting of factories in the test suite.
+# Speeds up turn around times of tests
+OSEM_FACTORY_LINT="false"
 
 # The smtp configuration. See the rails guides for more
 # http://guides.rubyonrails.org/action_mailer_basics.html#action-mailer-configuration
@@ -53,6 +61,3 @@ OSEM_SMTP_DOMAIN=""
 
 # Enable the usage of the devise ichain plugin
 OSEM_ICHAIN_ENABLED=false
-
-# Schedule grid parameters, cell size in minutes
-OSEM_SCHEDULE_CELL_SIZE=15

@@ -62,6 +62,10 @@ class Ability
       can [:new, :create], Event do |event|
         event.program.cfp_open? && event.new_record?
       end
+
+      can [:show, :events], Schedule do |schedule|
+        schedule.program.schedule_public
+      end
     end
   end
 
@@ -215,6 +219,7 @@ class Ability
     end
 
     can [:index, :revert_object, :revert_attribute], PaperTrail::Version, item_type: 'Event', conference_id: conf_ids_for_cfp
+    can [:index, :revert_object, :revert_attribute], PaperTrail::Version, item_type: 'Vote', conference_id: conf_ids_for_cfp
     can [:index, :revert_object, :revert_attribute], PaperTrail::Version do |version|
       version.item_type == 'Commercial' && conf_ids_for_cfp.include?(version.conference_id) &&
       (version.object.to_s.include?('Event') || version.object_changes.to_s.include?('Event'))

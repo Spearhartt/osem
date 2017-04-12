@@ -68,7 +68,7 @@ GEM
     axlsx (2.0.1)
       htmlentities (~> 4.3.1)
       nokogiri (>= 1.4.1)
-      rubyzip (~> 1.0.0)
+      rubyzip (~> 1.2.1)
     axlsx_rails (0.2.0)
       axlsx (>= 2.0.1)
       rails (>= 3.1)
@@ -125,6 +125,8 @@ GEM
       execjs
     coffee-script-source (1.10.0)
     columnize (0.8.9)
+    countable-rails (0.0.1)
+      railties (>= 3.1)
     countries (1.2.5)
       currencies (~> 0.4.2)
       i18n_data (~> 0.7.0)
@@ -150,12 +152,11 @@ GEM
     delayed_job_active_record (4.1.0)
       activerecord (>= 3.0, < 5)
       delayed_job (>= 3.0, < 5)
-    devise (3.5.5)
+    devise (4.2.0)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
-      railties (>= 3.2.6, < 5)
+      railties (>= 4.1.0, < 5.1)
       responders
-      thread_safe (~> 0.1)
       warden (~> 1.2.3)
     devise_ichain_authenticatable (0.3.1)
       devise (>= 2.2)
@@ -279,7 +280,7 @@ GEM
     mysql2 (0.4.2)
     netrc (0.11.0)
     nio4r (1.2.1)
-    nokogiri (1.6.8)
+    nokogiri (1.7.1)
       mini_portile2 (~> 2.1.0)
       pkg-config (~> 1.1.7)
     oauth2 (0.9.4)
@@ -416,7 +417,7 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
-    rolify (5.0.0)
+    rolify (5.1.0)
     rspec (3.0.0)
       rspec-core (~> 3.0.0)
       rspec-expectations (~> 3.0.0)
@@ -450,7 +451,7 @@ GEM
     ruby-oembed (0.8.14)
     ruby-openid (2.5.0)
     ruby-progressbar (1.7.5)
-    rubyzip (1.0.0)
+    rubyzip (1.2.1)
     safe_yaml (1.0.4)
     sass (3.2.19)
     sass-rails (4.0.4)
@@ -556,6 +557,7 @@ DEPENDENCIES
   chart-js-rails
   cloudinary
   cocoon
+  countable-rails (~> 0.0.1)
   country_select
   coveralls
   daemons
@@ -635,4 +637,4 @@ DEPENDENCIES
   whenever
 
 BUNDLED WITH
-   1.12.5
+   1.14.3
